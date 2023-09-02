@@ -1,11 +1,8 @@
 const puppeteer = require("puppeteer");
 const { scoresURL } = require("./constants");
 
-async function scrapeEspn(req, res) {
+async function scrapeEspn(startDate, endDate, req, res) {
   try {
-    const startDate = "20230901";
-    const endDate = "20230901";
-
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
@@ -17,7 +14,7 @@ async function scrapeEspn(req, res) {
       const url = `${scoresURL}/_/date/${currentDate}`;
       
       await page.goto(url);
-      await page.waitForSelector(".Scoreboard__RowContainer", { timeout: 60000 });
+      await page.waitForSelector(".Scoreboard__RowContainer", { timeout: 120000 });
 
       const matchData = await page.evaluate((date) => {
         const matchData = [];
@@ -73,7 +70,7 @@ async function scrapeEspn(req, res) {
           }
         
           if (!matchInfo.awayLogo) {
-            matchInfo.awayLogo = 'https://www.seekpng.com/png/full/28-289657_espn-soccer-team-logo-default.png';
+            matchInfo.awayLogo = 'https://www.seekpng.com/png/full/28-28957_espn-soccer-team-logo-default.png';
           }
           
           matchData.push(matchInfo);
