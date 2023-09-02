@@ -3,8 +3,8 @@ const { scoresURL } = require("./constants");
 
 async function scrapeEspn(req, res) {
   try {
-    const startDate = "20230831";
-    const endDate = "20230831";
+    const startDate = "20230901";
+    const endDate = "20230901";
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -17,7 +17,7 @@ async function scrapeEspn(req, res) {
       const url = `${scoresURL}/_/date/${currentDate}`;
       
       await page.goto(url);
-      await page.waitForSelector(".Scoreboard__RowContainer", { timeout: 60000 }); // Wait for 60 seconds
+      await page.waitForSelector(".Scoreboard__RowContainer", { timeout: 60000 });
 
       const matchData = await page.evaluate((date) => {
         const matchData = [];
