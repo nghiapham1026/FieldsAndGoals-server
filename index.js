@@ -15,8 +15,8 @@ async function main() {
     
     const app = express();
 
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(express.json({ limit: '25mb' }));
+    app.use(express.urlencoded({ limit: '25mb' }));
 
     app.use("/api/todo", require("./routes/todo.js"));
 
