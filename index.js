@@ -2,8 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const scrapeController = require("./controllers/webscrapeController");
-const { getYesterdayDate } = require("./models/yesterday");
-const { getDateRange } = require("./models/dates");
+const { getDateRange, getYesterdayDate } = require("./models/dates");
 
 const { startDate, endDate } = getDateRange();
 const yesterdayDate = getYesterdayDate();
