@@ -85,14 +85,8 @@ async function scrapeEspn(startDate, endDate, req, res) {
 
     await browser.close();
 
-    axios.post('http://localhost:8080/api/todo', { matches: allMatchData })
-      .then(response => {
-        console.log('Data sent to /api/todo:', response.data);
-      })
-      .catch(error => {
-        console.error('Error sending data to /api/todo:', error);
-      });
-    
+    //postData(allMatchData);
+
     res.json({ matches: allMatchData });
   } catch (error) {
     console.error("Error scraping:", error);
