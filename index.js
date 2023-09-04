@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const scrapeController = require("./controllers/webscrapeController");
 const { getDateRange, getYesterdayDate } = require("./models/dates");
+const cors = require('cors');
 
 const { startDate, endDate } = getDateRange();
 const yesterdayDate = getYesterdayDate();
@@ -14,6 +15,7 @@ async function main() {
     console.log("Connected to the database");
     
     const app = express();
+    app.use(cors());
 
     app.use(express.json({ limit: '25mb' }));
     app.use(express.urlencoded({ limit: '25mb' }));

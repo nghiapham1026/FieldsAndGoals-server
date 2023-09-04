@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const { scoresURL } = require("./constants");
+const axios = require('axios'); // Add this at the top of your file
 
 async function scrapeEspn(startDate, endDate, req, res) {
   try {
@@ -84,6 +85,14 @@ async function scrapeEspn(startDate, endDate, req, res) {
 
     await browser.close();
 
+    axios.post('http://localhost:8080/api/todo', { matches: allMatchData })
+      .then(response => {
+        console.log('Data sent to /api/todo:', response.data);
+      })
+      .catch(error => {
+        console.error('Error sending data to /api/todo:', error);
+      });
+    
     res.json({ matches: allMatchData });
   } catch (error) {
     console.error("Error scraping:", error);
