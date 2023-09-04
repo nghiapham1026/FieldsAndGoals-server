@@ -4,6 +4,8 @@ require("dotenv").config();
 const scrapeController = require("./controllers/webscrapeController");
 const { getDateRange, getYesterdayDate } = require("./models/dates");
 const cors = require('cors');
+const cron = require('node-cron');
+const postData = require('./routes/postData');
 
 const { startDate, endDate } = getDateRange();
 const yesterdayDate = getYesterdayDate();
@@ -28,6 +30,15 @@ async function main() {
 
     app.get("/yesterday", (req, res) => {
       scrapeController.scrapeEspn(yesterdayDate, yesterdayDate, req, res);
+    });
+
+    cron.schedule('0 2 * * *', async () => {
+      console.log('Running cron job to fetch yesterday\'s data');
+      const yesterdayDate = getYesterdayDate();
+      const { req, res } = {};
+      const allMatchData = await scrapeController.scrapeEspn(yesterdayDate, yesterdayDate, req, res);
+      
+      await postData(allMatchData);
     });
 
     app.listen(8080, () => {

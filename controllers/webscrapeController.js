@@ -85,9 +85,11 @@ async function scrapeEspn(startDate, endDate, req, res) {
 
     await browser.close();
 
-    //postData(allMatchData);
-
-    res.json({ matches: allMatchData });
+    if (res) {
+      res.json({ matches: allMatchData });
+    }
+    
+    return allMatchData;
   } catch (error) {
     console.error("Error scraping:", error);
     res.status(500).json({ error: "Error scraping data" });
