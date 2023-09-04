@@ -1,13 +1,9 @@
-function getDateRange() {
-  const startYear = "2023";
-  const endYear = "2023";
-  const startMonth = "8";
-  const endMonth = "8";
-  const startDay = "27";
-  const endDay = "31";
+function getDateRange(userStartDate, userEndDate) {
+  // If userStartDate is provided, use it; otherwise, use today's date
+  const startDate = userStartDate || formatDate(new Date());
 
-  const startDate = `${startYear}${startMonth.padStart(2, "0")}${startDay.padStart(2, "0")}`;
-  const endDate = `${endYear}${endMonth.padStart(2, "0")}${endDay.padStart(2, "0")}`;
+  // If userEndDate is provided, use it; otherwise, use a default value
+  const endDate = userEndDate || formatDate(new Date(new Date().setDate(new Date().getDate() + 7))); // 7 days from today as default
 
   return {
     startDate,
@@ -17,13 +13,14 @@ function getDateRange() {
 
 function getYesterdayDate() {
   const currentDate = new Date();
-  const yesterday = new Date(currentDate);
-  yesterday.setDate(currentDate.getDate() - 1);
+  const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
+  return formatDate(yesterday);
+}
 
-  const year = yesterday.getFullYear();
-  const month = String(yesterday.getMonth() + 1).padStart(2, '0');
-  const day = String(yesterday.getDate()).padStart(2, '0');
-
+function formatDate(dateObj) {
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
   return `${year}${month}${day}`;
 }
 
