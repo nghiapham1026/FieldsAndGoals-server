@@ -1,9 +1,27 @@
-function getDateRange(userStartDate, userEndDate) {
-  // If userStartDate is provided, use it; otherwise, use today's date
-  const startDate = userStartDate || formatDate(new Date());
+function getPacificDate() {
+  const utcDate = new Date();
+  const pacificOffset = -8 * 60; // Pacific Time offset in minutes
+  const localOffset = utcDate.getTimezoneOffset(); // Local time offset in minutes
+  const offsetDifference = localOffset - pacificOffset;
+  return new Date(utcDate.getTime() - offsetDifference * 60 * 1000);
+}
 
-  // If userEndDate is provided, use it; otherwise, use a default value
-  const endDate = userEndDate || formatDate(new Date(new Date().setDate(new Date().getDate() + 7))); // 7 days from today as default
+function getDateRange(userStartDate, userEndDate) {
+  const startDate = userStartDate || formatDate(getPacificDate());
+
+  let endDate = userEndDate || formatDate(new Date(getPacificDate().setDate(getPacificDate().getDate() + 7))); // 7 days from today as default
+
+  const startDateObj = new Date(startDate.substring(0, 4), parseInt(startDate.substring(4, 6)) - 1, startDate.substring(6, 8));
+  const endDateObj = new Date(endDate.substring(0, 4), parseInt(endDate.substring(4, 6)) - 1, endDate.substring(6, 8));
+
+  const diffInDays = (endDateObj - startDateObj) / (1000 * 60 * 60 * 24);
+
+  // Limit endDate to be at most 21 days from startDate
+  if (diffInDays > 21) {
+    const newEndDateObj = new Date(startDateObj);
+    newEndDateObj.setDate(newEndDateObj.getDate() + 21);
+    endDate = formatDate(newEndDateObj);
+  }
 
   return {
     startDate,
@@ -12,7 +30,7 @@ function getDateRange(userStartDate, userEndDate) {
 }
 
 function getYesterdayDate() {
-  const currentDate = new Date();
+  const currentDate = getPacificDate();
   const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
   return formatDate(yesterday);
 }

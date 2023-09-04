@@ -1,6 +1,6 @@
 const puppeteer = require("puppeteer");
 const { scoresURL } = require("./constants");
-const axios = require('axios'); // Add this at the top of your file
+const axios = require('axios');
 
 async function scrapeEspn(startDate, endDate, req, res) {
   try {
@@ -53,18 +53,10 @@ async function scrapeEspn(startDate, endDate, req, res) {
           matchInfo.matchStatus = matchStatusElement ? matchStatusElement.textContent.trim() : '';
     
           const homeLogoElement = container.querySelector(".ScoreboardScoreCell__Item--home .ScoreboardScoreCell__Logo");
-          matchInfo.homeLogo = homeLogoElement ? homeLogoElement.getAttribute("src") : '';
+          matchInfo.homeLogo = homeLogoElement ? homeLogoElement.getAttribute("src") : ' ';
     
           const awayLogoElement = container.querySelector(".ScoreboardScoreCell__Item--away .ScoreboardScoreCell__Logo");
-          matchInfo.awayLogo = awayLogoElement ? awayLogoElement.getAttribute("src") : '';
-
-          if (matchInfo.homeScore === '') {
-            matchInfo.homeScore = ' ';
-          }
-        
-          if (matchInfo.awayScore === '') {
-            matchInfo.awayScore = ' ';
-          }
+          matchInfo.awayLogo = awayLogoElement ? awayLogoElement.getAttribute("src") : ' ';
 
           if (!matchInfo.homeLogo) {
             matchInfo.homeLogo = 'https://www.seekpng.com/png/full/28-289657_espn-soccer-team-logo-default.png';
