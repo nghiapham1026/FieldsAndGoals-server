@@ -64,10 +64,10 @@ async function scrapeEspn(startDate, endDate, req, res) {
           matchInfo.awayTeam = awayTeamElement ? awayTeamElement.textContent.trim() : '';
     
           const homeScoreElement = container.querySelector(".ScoreboardScoreCell__Item--home .ScoreCell__Score");
-          matchInfo.homeScore = homeScoreElement ? homeScoreElement.textContent.trim() : '';
+          matchInfo.homeScore = homeScoreElement ? homeScoreElement.textContent.trim() : ' ';
     
           const awayScoreElement = container.querySelector(".ScoreboardScoreCell__Item--away .ScoreCell__Score");
-          matchInfo.awayScore = awayScoreElement ? awayScoreElement.textContent.trim() : '';
+          matchInfo.awayScore = awayScoreElement ? awayScoreElement.textContent.trim() : ' ';
     
           const matchStatusElement = container.querySelector(".ScoreCell__Time");
           matchInfo.matchStatus = matchStatusElement ? matchStatusElement.textContent.trim() : '';

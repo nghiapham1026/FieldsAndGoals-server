@@ -1,15 +1,14 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 require("dotenv").config();
 const scrapeController = require("./controllers/webscrapeController");
 const { getDateRange, getYesterdayDate } = require("./models/dates");
 const cors = require('cors');
 const cron = require('node-cron');
-const postData = require('./routes/postData');
+const { postData, logToFile } = require('./routes/postData');
+const mongoose = require("mongoose");
 
 const { startDate, endDate } = getDateRange();
 const yesterdayDate = getYesterdayDate();
-const mongoose = require("mongoose");
 
 async function main() {
   try {
@@ -32,13 +31,22 @@ async function main() {
       scrapeController.scrapeEspn(yesterdayDate, yesterdayDate, req, res);
     });
 
-    cron.schedule('0 2 * * *', async () => {
-      console.log('Running cron job to fetch yesterday\'s data');
+    cron.schedule('0 14 * * *', async () => {
+      const logMessage = 'Running cron job to fetch data';
+      console.log(logMessage);
+      logToFile(logMessage);
+
       const yesterdayDate = getYesterdayDate();
       const { req, res } = {};
       const allMatchData = await scrapeController.scrapeEspn(yesterdayDate, yesterdayDate, req, res);
+
+      const postSuccess = await postData(allMatchData);
+      if (postSuccess) {
+        const successMessage = 'Successfully posted data';
+        console.log(successMessage);
+        logToFile(successMessage);
+      }
       
-      await postData(allMatchData);
     });
 
     app.listen(8080, () => {
