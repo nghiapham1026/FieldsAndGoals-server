@@ -11,7 +11,27 @@ async function scrapeEspn(startDate, endDate, req, res) {
 
     const allMatchData = [];
 
-    for (let currentDate = startDate; currentDate <= endDate; currentDate++) {
+    const start = new Date(
+      parseInt(startDate.substring(0, 4)),
+      parseInt(startDate.substring(4, 6)) - 1,
+      parseInt(startDate.substring(6, 8))
+    );
+    
+    const end = new Date(
+      parseInt(endDate.substring(0, 4)),
+      parseInt(endDate.substring(4, 6)) - 1,
+      parseInt(endDate.substring(6, 8))
+    );
+    
+    let current = new Date(start);
+
+    while (current <= end) {
+      // Convert current Date object to the YYYYMMDD format
+      const year = current.getFullYear();
+      const month = String(current.getMonth() + 1).padStart(2, '0');
+      const day = String(current.getDate()).padStart(2, '0');
+      const currentDate = `${year}${month}${day}`;
+    
       const url = `${scoresURL}/_/date/${currentDate}`;
       
       await page.goto(url);
@@ -73,6 +93,7 @@ async function scrapeEspn(startDate, endDate, req, res) {
       }, currentDate);
 
       allMatchData.push(...matchData);
+      current.setDate(current.getDate() + 1);
     }
 
     await browser.close();
