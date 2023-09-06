@@ -35,6 +35,12 @@ function getDateRange(userEndDate) {
   };
 }
 
+function getYesterdayDate() {
+  const currentDate = new Date(); // Use server's local time
+  const yesterday = new Date(currentDate.setDate(currentDate.getDate() - 1));
+  return formatDate(yesterday);
+}
+
 function formatDate(dateObj) {
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
@@ -44,4 +50,5 @@ function formatDate(dateObj) {
 
 module.exports = {
   getDateRange,
+  getYesterdayDate
 };
