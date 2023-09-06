@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const { scoresURL } = require("./constants");
+const axios = require('axios');
 
 async function scrapeEspn(startDate, endDate, req, res) {
   try {
@@ -10,7 +11,27 @@ async function scrapeEspn(startDate, endDate, req, res) {
 
     const allMatchData = [];
 
-    for (let currentDate = startDate; currentDate <= endDate; currentDate++) {
+    const start = new Date(
+      parseInt(startDate.substring(0, 4)),
+      parseInt(startDate.substring(4, 6)) - 1,
+      parseInt(startDate.substring(6, 8))
+    );
+    
+    const end = new Date(
+      parseInt(endDate.substring(0, 4)),
+      parseInt(endDate.substring(4, 6)) - 1,
+      parseInt(endDate.substring(6, 8))
+    );
+    
+    let current = new Date(start);
+
+    while (current <= end) {
+      // Convert current Date object to the YYYYMMDD format
+      const year = current.getFullYear();
+      const month = String(current.getMonth() + 1).padStart(2, '0');
+      const day = String(current.getDate()).padStart(2, '0');
+      const currentDate = `${year}${month}${day}`;
+    
       const url = `${scoresURL}/_/date/${currentDate}`;
       
       await page.goto(url);
@@ -43,27 +64,19 @@ async function scrapeEspn(startDate, endDate, req, res) {
           matchInfo.awayTeam = awayTeamElement ? awayTeamElement.textContent.trim() : '';
     
           const homeScoreElement = container.querySelector(".ScoreboardScoreCell__Item--home .ScoreCell__Score");
-          matchInfo.homeScore = homeScoreElement ? homeScoreElement.textContent.trim() : '';
+          matchInfo.homeScore = homeScoreElement ? homeScoreElement.textContent.trim() : ' ';
     
           const awayScoreElement = container.querySelector(".ScoreboardScoreCell__Item--away .ScoreCell__Score");
-          matchInfo.awayScore = awayScoreElement ? awayScoreElement.textContent.trim() : '';
+          matchInfo.awayScore = awayScoreElement ? awayScoreElement.textContent.trim() : ' ';
     
           const matchStatusElement = container.querySelector(".ScoreCell__Time");
           matchInfo.matchStatus = matchStatusElement ? matchStatusElement.textContent.trim() : '';
     
           const homeLogoElement = container.querySelector(".ScoreboardScoreCell__Item--home .ScoreboardScoreCell__Logo");
-          matchInfo.homeLogo = homeLogoElement ? homeLogoElement.getAttribute("src") : '';
+          matchInfo.homeLogo = homeLogoElement ? homeLogoElement.getAttribute("src") : ' ';
     
           const awayLogoElement = container.querySelector(".ScoreboardScoreCell__Item--away .ScoreboardScoreCell__Logo");
-          matchInfo.awayLogo = awayLogoElement ? awayLogoElement.getAttribute("src") : '';
-
-          if (matchInfo.homeScore === '') {
-            matchInfo.homeScore = ' ';
-          }
-        
-          if (matchInfo.awayScore === '') {
-            matchInfo.awayScore = ' ';
-          }
+          matchInfo.awayLogo = awayLogoElement ? awayLogoElement.getAttribute("src") : ' ';
 
           if (!matchInfo.homeLogo) {
             matchInfo.homeLogo = 'https://www.seekpng.com/png/full/28-289657_espn-soccer-team-logo-default.png';
@@ -80,11 +93,16 @@ async function scrapeEspn(startDate, endDate, req, res) {
       }, currentDate);
 
       allMatchData.push(...matchData);
+      current.setDate(current.getDate() + 1);
     }
 
     await browser.close();
 
-    res.json({ matches: allMatchData });
+    if (res) {
+      res.json({ matches: allMatchData });
+    }
+    
+    return allMatchData;
   } catch (error) {
     console.error("Error scraping:", error);
     res.status(500).json({ error: "Error scraping data" });
