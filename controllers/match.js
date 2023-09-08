@@ -1,7 +1,6 @@
 const MatchData = require("../models/match");
-const { getDateRange, getYesterdayDate } = require("../utils/dateUtils");
+const { getDateRange, getYesterdayDate, formatDateToLongString } = require("../utils/dateUtils");
 const scrapeController = require("./webscrapeController");
-const mongoose = require("mongoose");
 
 const yesterdayDate = getYesterdayDate();
 
@@ -79,7 +78,12 @@ exports.getResultsByDates = async (req, res) => {
 
 // Sample query: http://localhost:8080/espn/getMatchesByDate?date=September%209,%202023
 exports.getMatchesByDate = async (req, res) => {
-  const queryDate = req.query.date || getYesterdayDate();
+  let queryDate = req.query.date;
+  
+  if (!queryDate) {
+    const yesterdayDate = getYesterdayDate();
+    queryDate = formatDateToLongString(yesterdayDate);
+  }
 
   try {
     const matches = await MatchData.find({ "matches.matchDate": queryDate });

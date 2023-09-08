@@ -47,7 +47,18 @@ function formatDate(dateObj) {
   return `${year}${month}${day}`;
 }
 
+function formatDateToLongString(dateString) {
+  const dateObj = new Date(
+    parseInt(dateString.substring(0, 4)),
+    parseInt(dateString.substring(4, 6)) - 1,
+    parseInt(dateString.substring(6, 8))
+  );
+  const options = { year: 'numeric', month: 'long', day: 'numeric' };
+  return dateObj.toLocaleDateString('en-US', options);
+}
+
 module.exports = {
   getDateRange,
-  getYesterdayDate
+  getYesterdayDate,
+  formatDateToLongString
 };
